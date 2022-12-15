@@ -2,9 +2,12 @@ type metadata = { featured_packages : string list } [@@deriving of_yaml]
 type t = metadata
 
 let all () =
-  Data.read "packages.yml" |> Option.get
-  |> Utils.decode_or_raise Yaml.of_string
-  |> Utils.decode_or_raise metadata_of_yaml
+  let (>>=) = Result.bind in
+  Data.read "packages.yml"
+  |> Import.Result.of_option (`Msg "packages.ml: file not found")
+  >>= Yaml.of_string
+  >>= metadata_of_yaml
+  |> Import.Result.get Utils.decode_error
 
 let pp ppf t =
   Fmt.pf ppf {|{ featured_packages = %a }|} (Pp.list Pp.string)
