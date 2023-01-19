@@ -4,10 +4,10 @@ type t = metadata
 let all () =
   let (>>=) = Result.bind in
   Data.read "packages.yml"
-  |> Import.Result.of_option (`Msg "packages.ml: file not found")
+  |> Option.to_result ~none:(`Msg "packages.ml: file not found")
   >>= Yaml.of_string
   >>= metadata_of_yaml
-  |> Import.Result.get Utils.decode_error
+  |> Utils.decode_or_raise Fun.id
 
 let pp ppf t =
   Fmt.pf ppf {|{ featured_packages = %a }|} (Pp.list Pp.string)
