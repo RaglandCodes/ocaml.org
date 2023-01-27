@@ -58,3 +58,17 @@ let slugify value =
   |> Str.global_replace (Str.regexp " ") "-"
   |> String.lowercase_ascii
   |> Str.global_replace (Str.regexp "[^a-z0-9\\-]") ""
+
+let yaml_sequence_file of_yaml file =
+  let (>>=) = Result.bind in
+  let (<@>) = Import.Result.apply in
+  let key = Filename.remove_extension file in
+  Data.read file
+  |> Option.to_result ~none:(`Msg "file not found")
+  >>= Yaml.of_string
+  >>= Yaml.Util.find key
+  >>= Option.to_result ~none:(`Msg (key ^ " key not found"))
+  >>= (function `A u -> Ok u | _ -> Error (`Msg "expecting a sequence"))
+  >>= List.fold_left (fun u x -> Ok List.cons <@> of_yaml x <@> u) (Ok [])
+  |> Result.map_error (function `Msg err -> `Msg (file ^ ": " ^ err))
+  |> function Ok x -> x | Error (`Msg err) -> failwith err

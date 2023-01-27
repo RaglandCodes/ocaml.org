@@ -45,20 +45,10 @@ let of_metadata m =
     ~modify_kind:(Utils.decode_or_raise Kind.of_string)
 
 let decode s =
-  let yaml = Utils.decode_or_raise Yaml.of_string s in
-  match yaml with
-  | `O [ ("videos", `A xs) ] ->
-      Ok
-        (List.map
-           (fun x ->
-             let metadata = Utils.decode_or_raise metadata_of_yaml x in
-             of_metadata metadata)
-           xs)
-  | _ -> Error (`Msg "expected a list of videos")
+  Import.Result.apply (Ok of_metadata) (metadata_of_yaml s)
 
 let all () =
-  let content = Data.read "videos.yml" |> Option.get in
-  Utils.decode_or_raise decode content
+  Utils.yaml_sequence_file decode "videos.yml"
 
 let pp_kind ppf v =
   Fmt.pf ppf "%s"
