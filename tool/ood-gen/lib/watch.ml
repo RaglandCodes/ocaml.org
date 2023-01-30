@@ -9,8 +9,7 @@ type metadata = {
 }
 [@@deriving of_yaml]
 
-let all () =
-  Utils.yaml_sequence_file metadata_of_yaml "watch.yml"
+let all () = Utils.yaml_sequence_file metadata_of_yaml "watch.yml"
 
 let pp ppf v =
   Fmt.pf ppf

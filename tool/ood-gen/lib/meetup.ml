@@ -18,12 +18,8 @@ type t = {
 [@@deriving stable_record ~version:metadata ~remove:[ slug ]]
 
 let of_metadata m = of_metadata m ~slug:(Utils.slugify m.title)
-
-let decode s =
-  Import.Result.apply (Ok of_metadata) (metadata_of_yaml s)
-
-let all () =
-  Utils.yaml_sequence_file decode "meetups.yml"
+let decode s = Import.Result.apply (Ok of_metadata) (metadata_of_yaml s)
+let all () = Utils.yaml_sequence_file decode "meetups.yml"
 
 let pp ppf v =
   Fmt.pf ppf
