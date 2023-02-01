@@ -5,9 +5,10 @@ let sidebar
 ~is_latest_url
 (package : Package_intf.package)
 =
+  let version = if is_latest_url then None else Some package.version in
   <div class="flex flex-col font-normal text-body-400">
     <% if str_path != [] && toc != [] then ( %>
-    <a title="Package <%s package.name %>" class="xl:hidden py-1 font-regular text-body-600 hover:text-orange-600 transition-colors mb-6" href="<%s Url.package_doc package.name package.version ~is_latest_url %>">
+    <a title="Package <%s package.name %>" class="xl:hidden py-1 font-regular text-body-600 hover:text-orange-600 transition-colors mb-6" href="<%s Url.package_doc package.name ?version %>">
       back to documentation root
     </a>
     <% ); %>
@@ -31,6 +32,7 @@ let render
 ~is_latest_url
 (package : Package_intf.package) 
 =
+let version = if is_latest_url then None else Some package.version in
 let str_path =
   List.map (function
         | Breadcrumbs.Library s -> s
@@ -50,7 +52,7 @@ Package_layout.render
 ~title
 ~description:(Printf.sprintf "%s %s: %s" package.name package.version package.description)
 ~package
-~canonical:(Url.package_doc package.name package.version ~is_latest_url:false ?page:path_page)
+~canonical:(Url.package_doc package.name ?version ?page:path_page)
 ~styles:["/css/main.css"; "/css/doc.css"]
 ~tab:Documentation @@
 <div x-data="{ open: false, sidebar: window.innerWidth > 1024 && true, showOnMobile: false}" @resize.window="sidebar = window.innerWidth > 1024">
