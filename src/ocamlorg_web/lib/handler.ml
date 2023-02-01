@@ -379,16 +379,16 @@ let package_docs _t req =
 
 let installer req = Dream.redirect req Ocamlorg_frontend.Url.github_installer
 
+let to_package t name version =
+  if version = "latest" then Ocamlorg_package.get_package_latest t name
+  else
+    let version = Ocamlorg_package.Version.of_string version in
+    Ocamlorg_package.get_package t name version
+
 let package_versioned t kind req =
   let name = Ocamlorg_package.Name.of_string @@ Dream.param req "name" in
   let version_from_url = Dream.param req "version" in
-  let package =
-    if version_from_url = "latest" then
-      Ocamlorg_package.get_package_latest t name
-    else
-      let version = Ocamlorg_package.Version.of_string @@ version_from_url in
-      Ocamlorg_package.get_package t name version
-  in
+  let package = to_package t name version_from_url in
   match package with
   | None -> not_found req
   | Some package ->
@@ -446,13 +446,7 @@ let package_versioned t kind req =
 let package_doc t kind req =
   let name = Ocamlorg_package.Name.of_string @@ Dream.param req "name" in
   let version_from_url = Dream.param req "version" in
-  let package =
-    if version_from_url = "latest" then
-      Ocamlorg_package.get_package_latest t name
-    else
-      let version = Ocamlorg_package.Version.of_string @@ version_from_url in
-      Ocamlorg_package.get_package t name version
-  in
+  let package = to_package t name version_from_url in
   match package with
   | None -> not_found req
   | Some package -> (
@@ -470,14 +464,9 @@ let package_doc t kind req =
           if is_latest_url then None
           else Some (Ocamlorg_package.Version.to_string version)
         in
-        let make =
-          match kind with
-          | `Package ->
-              Ocamlorg_frontend.Url.package_doc ?hash:None ~page:"" ?version
-          | `Universe u ->
-              Ocamlorg_frontend.Url.package_doc ~hash:u ~page:"" ?version
-        in
-        make (Ocamlorg_package.Name.to_string name)
+        let hash = match kind with `Package -> None | `Universe u -> Some u in
+        Ocamlorg_frontend.Url.package_doc ?hash ~page:"" ?version
+          (Ocamlorg_package.Name.to_string name)
       in
       let* docs = Ocamlorg_package.documentation_page ~kind package path in
       match docs with
