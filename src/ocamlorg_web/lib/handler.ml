@@ -467,10 +467,8 @@ let package_doc t kind req =
       let path = (Dream.path [@ocaml.warning "-3"]) req |> String.concat "/" in
       let root =
         let version =
-          if is_latest_url then
-            None
-          else
-            Some (Ocamlorg_package.Version.to_string version)
+          if is_latest_url then None
+          else Some (Ocamlorg_package.Version.to_string version)
         in
         let make =
           match kind with
@@ -479,8 +477,7 @@ let package_doc t kind req =
           | `Universe u ->
               Ocamlorg_frontend.Url.package_doc ~hash:u ~page:"" ?version
         in
-        make
-          (Ocamlorg_package.Name.to_string name)
+        make (Ocamlorg_package.Name.to_string name)
       in
       let* docs = Ocamlorg_package.documentation_page ~kind package path in
       match docs with
