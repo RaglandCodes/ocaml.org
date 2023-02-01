@@ -45,7 +45,7 @@ Package_layout.render
 ~is_latest_url
 ~title:(Printf.sprintf "%s %s · OCaml Package" package.name package.version)
 ~description:(Printf.sprintf "%s %s: %s" package.name package.version package.description)
-~canonical:(Url.package_with_version package.name package.version)
+~canonical:(Url.package_with_version package.name ~version:package.version)
 ~package
 ~tab:Overview @@
 <div class="flex lg:space-x-4 xl:space-x-12 flex-col xl:flex-row justify-between">
@@ -229,7 +229,7 @@ Package_layout.render
         <div class="flex flex-col space-y-3 max-h-96 overflow-auto">
             <% rev_dependencies |> List.iter (fun (name, cstr, version) -> %>
             <div class="flex items-center space-x-3">
-                <a href="<%s Url.package_with_version name version %>" class="text-primary-600 hover:underline">
+                <a href="<%s Url.package_with_version name ~version %>" class="text-primary-600 hover:underline">
                     <%s name %>
                 </a>
                 <% match cstr with None -> () | Some cstr -> %>
