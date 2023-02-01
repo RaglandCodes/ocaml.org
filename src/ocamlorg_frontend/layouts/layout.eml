@@ -2,7 +2,6 @@ let render
 ?(show_get_started=true)
 ?(use_swiper=false)
 ?(banner = false)
-?(wide=false)
 ?description
 ?styles
 ~title
@@ -41,6 +40,7 @@ inner =
     <% ); %>
     <link rel="stylesheet" href="/vendors/font-files/inter.css">
     <script defer src="/vendors/alpine.min.js"></script>
+    <script defer src="/vendors/htmx.min.js"></script>
     <% if use_swiper then ( %>
     <link rel="stylesheet" href="/vendors/swiper-bundle.min.css">
     <link rel="alternate" type="application/rss+xml" title="OCaml RSS Feed" href="/feed.xml">
@@ -69,7 +69,7 @@ inner =
     </div>
     <% ); %>
     
-    <%s! Header.render ~wide ~show_get_started ?active_top_nav_item () %>
+    <%s! Header.render ~show_get_started ?active_top_nav_item () %>
 
     <main><%s! inner %></main>
 
