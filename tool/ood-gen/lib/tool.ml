@@ -43,7 +43,7 @@ let of_metadata m =
     ~modify_lifecycle:(Utils.decode_or_raise Lifecycle.of_string)
     ~modify_description:(fun v -> Omd.of_string v |> Omd.to_html)
 
-let decode s = Import.Result.apply (Ok of_metadata) (metadata_of_yaml s)
+let decode s = Result.map of_metadata (metadata_of_yaml s)
 let all () = Utils.yaml_sequence_file decode "tools.yml"
 
 let pp_lifecycle ppf v =
